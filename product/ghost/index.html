@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-E EMOTION | Virtual Persona Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div style="font-size: 1.2rem; font-weight: 700; letter-spacing: 1px;">A-E_EMOTION <span style="color: #444; font-weight: 300;">-ELECTRA- v1.3.0</span></div>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+                <span id="theme-display" style="font-size: 0.7rem; color: #999;">Theme: Aurora Dark</span>
+                <span id="time-display" style="font-size: 0.7rem; color: #999;">00:00</span>
+            </div>
+            <div class="status-badge">SIMULATION_ACTIVE</div>
+            <button id="pause-btn">PAUSE</button>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="monitor-panel">
+            <div class="stat-group">
+                <div class="simulation-label">Human Life Cycle Experience</div>
+                <div class="stat-label">Simulated Age</div>
+                <div id="age-display" class="stat-value">0</div>
+            </div>
+            <div class="stat-group">
+                <div class="stat-label">Emotion Synthesis Level</div>
+                <div id="emotion-display" class="stat-value" style="font-size: 1.8rem;">0%</div>
+                <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 8px;">
+                    <div id="emotion-bar" style="height: 100%; width: 0%; background: var(--neon-pink); box-shadow: 0 0 10px var(--neon-pink); border-radius: 2px; transition: width 0.5s ease-out;"></div>
+                </div>
+            </div>
+            <div class="stat-group">
+                <div class="stat-label">Current Observation Mode</div>
+                <div id="stage-display" class="stat-value" style="font-size: 1.4rem;">Initializing...</div>
+            </div>
+            <div class="time-progress">
+                <div id="time-bar" class="time-bar" style="width: 0%"></div>
+            </div>
+            <div class="slider-container">
+                <div style="display: flex; justify-content: space-between; font-size: 0.7rem;">
+                    <span>Simulation Speed</span>
+                    <span id="speed-display">Speed: x1</span>
+                </div>
+                <input type="range" id="speed-slider" min="1" max="10" value="1">
+            </div>
+        </div>
+        <div id="log-container" class="log-panel">
+            <!-- Logs will be dynamically injected -->
+        </div>
+    </main>
+
+    <!-- Core Logic: Runs immediately and reliably -->
+    <script src="engine.js"></script>
+    
+    <!-- AI Engine: Loaded asynchronously as a module -->
+    <script type="module" src="ai-client.js"></script>
+</body>
+</html>

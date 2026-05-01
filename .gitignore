@@ -1,0 +1,12 @@
+*
+!.agent/
+!README.md
+!.gitignore
+!management/
+!management/**
+!product/
+!product/**
+product/.env
+product/tests/node_modules/
+product/tests/test-results/
+.genkit/

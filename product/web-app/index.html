@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Notes | Premium Task Management</title>
+    <meta name="description" content="A premium, glassmorphic memo app for modern thinkers.">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <header class="app-header glass">
+        <div class="app-logo">
+            <span class="neon-text">AURORA</span> NOTES
+        </div>
+        
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="メモを検索..." aria-label="検索">
+        </div>
+        
+        <div class="user-actions" style="display: flex; align-items: center; gap: 12px;">
+            <div style="display: flex; gap: 16px; align-items: center; margin-right: 20px; border-right: 1px solid var(--glass-border, rgba(255,255,255,0.1)); padding-right: 20px;">
+                <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
+                    <span id="theme-display" style="font-size: 0.7rem; color: #999;">Theme: Dark</span>
+                    <input type="range" id="theme-slider" min="0" max="100" value="100" style="width: 80px; cursor: pointer;">
+                </div>
+                <button id="clear-all-notes-btn" style="background: rgba(255, 0, 0, 0.1); border: 1px solid #ff4444; color: #ff4444; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.7rem; transition: 0.3s;">CLEAR MEMORY</button>
+                <button id="global-pause-btn" style="background: rgba(240, 103, 255, 0.1); border: 1px solid var(--neon-pink); color: var(--neon-pink); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.7rem; transition: 0.3s;">PAUSE</button>
+            </div>
+            
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--neon-pink); letter-spacing: 1px;">GHOST MODE</span>
+            <label class="ghost-switch">
+                <input type="checkbox" id="ghost-toggle">
+                <span class="slider round"></span>
+            </label>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- New Note Input Area -->
+        <section class="new-note-section">
+            <div id="new-note-trigger" class="glass glass-hover" style="padding: 16px 24px; margin-bottom: 40px; cursor: pointer; color: var(--text-secondary);">
+                新しいメモを作成...
+            </div>
+            
+            <div id="note-editor" class="glass note-editor" style="display: none; padding: 24px; margin-bottom: 40px;">
+                <input type="text" id="editor-title" placeholder="タイトル" style="width: 100%; background: transparent; border: none; font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; outline: none;">
+                <textarea id="editor-content" placeholder="メモを入力..." style="width: 100%; background: transparent; border: none; font-size: 1rem; min-height: 100px; resize: none; outline: none;"></textarea>
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px;">
+                    <button id="cancel-note" style="padding: 8px 16px; background: transparent; border: 1px solid var(--glass-border); border-radius: 8px; cursor: pointer;">キャンセル</button>
+                    <button id="save-note" style="padding: 8px 24px; background: var(--neon-purple); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: 600;">保存</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes Grid -->
+        <section id="notes-grid" class="notes-grid">
+            <!-- Notes will be injected here by JavaScript -->
+        </section>
+    </main>
+
+    <!-- Ghost Cursor for Animation -->
+    <div id="ghost-cursor" style="position: fixed; top: 0; left: 0; width: 24px; height: 24px; background: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23f067ff%22 stroke=%22white%22 stroke-width=%221%22><path d=%22M5.5 3.21V20.8c0 .45.54.67.85.35l4.86-4.86a.5.5 0 0 1 .35-.15h6.87a.5.5 0 0 0 .35-.85L5.5 3.21z%22/></svg>') no-repeat center center; background-size: contain; z-index: 9999; pointer-events: none; opacity: 0; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;"></div>
+
+    <!-- Global Sync Logic -->
+    <script>
+        let globalPaused = localStorage.getItem('aurora_sim_paused') === 'true';
+        const pauseBtn = document.getElementById('global-pause-btn');
+        const themeSlider = document.getElementById('theme-slider');
+        const themeDisplay = document.getElementById('theme-display');
+
+        function applyTheme(val) {
+            if (themeDisplay) themeDisplay.innerText = `Theme: ${val < 50 ? 'Light' : 'Dark'} (${val}%)`;
+            const lightness = 95 - (val * 0.9);
+            document.documentElement.style.setProperty('--bg-dark', `hsl(220, 15%, ${lightness}%)`);
+            document.body.style.color = val < 50 ? '#111' : '#f1f5f9';
+            document.body.style.backgroundImage = val < 50 ? 'none' : 'radial-gradient(circle at 0% 0%, rgba(0, 242, 254, 0.05) 0, transparent 40%), radial-gradient(circle at 100% 100%, rgba(115, 103, 240, 0.05) 0, transparent 40%)';
+            
+            const isLight = val < 50;
+            const txtMain = isLight ? '#111' : '#f1f5f9';
+            const txtSub = isLight ? '#444' : '#94a3b8';
+            const cardBg = isLight ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.03)';
+            const glassBg = isLight ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.03)';
+            const borderC = isLight ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.05)';
+            const shadow = isLight ? '0 4px 15px rgba(0,0,0,0.05)' : 'none';
+            const cssRules = `
+                .note-card.glass { background: ${cardBg}; border-color: ${borderC}; color: ${txtMain}; box-shadow: ${shadow}; }
+                .note-content { color: ${txtSub}; }
+                .note-title { color: ${txtMain}; }
+                .app-header.glass, .note-editor.glass, #new-note-trigger.glass { background: ${glassBg}; color: ${txtMain}; border-color: ${borderC}; box-shadow: ${shadow}; }
+                #editor-title { color: ${txtMain}; }
+                #editor-title::placeholder { color: ${txtSub}; }
+                #editor-content { color: ${txtMain}; }
+                #editor-content::placeholder { color: ${txtSub}; }
+                #cancel-note { color: ${txtSub}; }
+                #search-input { color: ${txtMain}; background: ${isLight ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)'}; border-color: ${isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.08)'}; }
+                #search-input::placeholder { color: ${txtSub}; }
+                #new-note-trigger { color: ${txtSub} !important; }
+                .delete-btn { color: ${isLight ? '#c00' : '#f067ff'}; }
+            `;
+            let styleTag = document.getElementById('dynamic-theme-style');
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = 'dynamic-theme-style';
+                document.head.appendChild(styleTag);
+            }
+            styleTag.innerHTML = cssRules;
+
+            if (themeSlider && themeSlider.value !== String(val)) themeSlider.value = val;
+        }
+
+        function updatePauseBtn(isPaused) {
+            if (!pauseBtn) return;
+            pauseBtn.innerText = isPaused ? 'RESUME' : 'PAUSE';
+            pauseBtn.style.background = isPaused ? 'rgba(240, 103, 255, 0.4)' : 'rgba(240, 103, 255, 0.1)';
+        }
+
+        applyTheme(parseInt(localStorage.getItem('aurora_theme') || '100'));
+        updatePauseBtn(globalPaused);
+
+        if (pauseBtn) {
+            pauseBtn.addEventListener('click', () => {
+                globalPaused = !globalPaused;
+                localStorage.setItem('aurora_sim_paused', globalPaused.toString());
+                updatePauseBtn(globalPaused);
+            });
+        }
+
+        if (themeSlider) {
+            themeSlider.addEventListener('input', (e) => {
+                const val = e.target.value;
+                localStorage.setItem('aurora_theme', val);
+                applyTheme(parseInt(val));
+            });
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'aurora_theme') applyTheme(parseInt(e.newValue));
+            if (e.key === 'aurora_sim_paused') {
+                globalPaused = e.newValue === 'true';
+                updatePauseBtn(globalPaused);
+            }
+        });
+    </script>
+    <script src="index.js"></script>
+</body>
+</html>

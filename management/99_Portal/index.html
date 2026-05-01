@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Notes - Project Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent-primary: #00f2fe;
+            --accent-secondary: #7367f0;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(115, 103, 240, 0.15) 0, transparent 50%);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 1000px;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-tag {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-primary);
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .status-badge {
+            margin-top: auto;
+            padding-top: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            margin-top: 80px;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%; max-width: 1000px; margin: 0 auto; text-align: left;">
+            <div>
+                <h1 style="text-align: left;">AURORA NOTES</h1>
+                <p style="text-align: left;">Google Keep Evolution - <span style="color: #10b981; font-weight: 700;">MISSION ACCOMPLISHED</span></p>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid var(--glass-border);">
+                <span id="theme-display" style="font-size: 0.7rem; color: var(--text-dim);">Theme: Dark</span>
+                <input type="range" id="theme-slider" min="0" max="100" value="100" style="width: 80px; cursor: pointer;">
+            </div>
+        </div>
+    </header>
+
+    <main class="grid">
+        <!-- DUAL ACCESS CARDS -->
+        <div style="grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <!-- WEB APP LINK -->
+            <a href="../../product/web-app/index.html" target="_blank" class="card" style="border-color: var(--accent-primary); background: linear-gradient(135deg, rgba(0, 242, 254, 0.1) 0%, rgba(30, 41, 59, 0.7) 100%);">
+                <div class="card-tag" style="display: flex; align-items: center; gap: 8px;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981;"></span>
+                    WEB APPLICATION
+                </div>
+                <div class="card-title">Aurora Notes 本体</div>
+                <div class="card-desc">完成したノートアプリの全機能を手動で体験できます。</div>
+            </a>
+
+            <!-- GHOST SIMULATOR LINK -->
+            <a href="../../product/ghost/index.html" target="_blank" class="card" style="border-color: var(--accent-secondary); background: linear-gradient(135deg, rgba(115, 103, 240, 0.1) 0%, rgba(30, 41, 59, 0.7) 100%);">
+                <div class="card-tag" style="display: flex; align-items: center; gap: 8px;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background: #f067ff; border-radius: 50%; box-shadow: 0 0 10px #f067ff; animation: ghostPulse 2s infinite;"></span>
+                    GHOST IN THE SHELL
+                </div>
+                <div class="card-title">人生シミュレーター</div>
+                <div class="card-desc">1時間で人間の一生を体験するゴーストが自律的にメモを紡ぎます。</div>
+                <style>
+                    @keyframes ghostPulse {
+                        0% { opacity: 1; transform: scale(1); }
+                        50% { opacity: 0.5; transform: scale(1.2); }
+                        100% { opacity: 1; transform: scale(1); }
+                    }
+                </style>
+            </a>
+        </div>
+
+        <a href="viewer.html?file=../01_Requirements/01_Requirements.md" class="card">
+            <div class="card-tag">Milestone 01</div>
+            <div class="card-title">要件定義書</div>
+            <div class="card-desc">プロジェクトの目的、ターゲット、機能要件、および成功の定義。</div>
+            <div class="status-badge">
+                <span class="status-dot"></span> 完了
+            </div>
+        </a>
+
+        <a href="viewer.html?file=../02_Planning/02_Planning.md" class="card">
+            <div class="card-tag">Milestone 02</div>
+            <div class="card-title">作業計画書 (WBS)</div>
+            <div class="card-desc">AI加速設計に基づく3フェーズの開発計画とガントチャート。</div>
+            <div class="status-badge">
+                <span class="status-dot"></span> 完了
+            </div>
+        </a>
+
+        <div class="card">
+            <div class="card-tag">Milestone 03</div>
+            <div class="card-title">実装・進捗報告</div>
+            <div class="card-desc">全工程の監査をパスし、品質基準を満たしています。</div>
+            
+            <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 20;">
+                <a href="viewer.html?file=../03_Implementation/04_Ghost_Architecture_Report.md" class="history-link active-link">
+                    <span class="history-num">04.</span> A-E EMOTION 電脳人格アーキテクチャ
+                </a>
+                <a href="viewer.html?file=../03_Implementation/03_Final_Verification_Report.md" class="history-link">
+                    <span class="history-num">03.</span> 最終品質監査報告 (納品前)
+                </a>
+                <a href="viewer.html?file=../03_Implementation/02_Polish_Report.md" class="history-link">
+                    <span class="history-num">02.</span> アニメーション・UX磨き込み
+                </a>
+                <a href="viewer.html?file=../03_Implementation/01_Foundation_Report.md" class="history-link">
+                    <span class="history-num">01.</span> UI基盤およびコアロジック構築
+                </a>
+            </div>
+
+            <style>
+                .history-link {
+                    font-size: 0.85rem;
+                    text-decoration: none;
+                    color: var(--text-dim);
+                    padding: 10px 12px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: all 0.2s ease;
+                    background: rgba(255, 255, 255, 0.02);
+                }
+                .history-link:hover {
+                    background: rgba(255, 255, 255, 0.08);
+                    color: var(--text-main);
+                    transform: translateX(4px);
+                }
+                .history-link.active-link {
+                    color: var(--accent-primary);
+                    font-weight: 600;
+                    background: rgba(0, 242, 254, 0.05);
+                }
+                .history-num {
+                    opacity: 0.4;
+                    font-family: monospace;
+                    font-weight: 400;
+                }
+            </style>
+
+            <div class="status-badge">
+                <span class="status-dot"></span> 完了
+            </div>
+        </div>
+
+        <a href="viewer.html?file=../04_Delivery/04_Delivery_Note.md" class="card">
+            <div class="card-tag">Milestone 04</div>
+            <div class="card-title">最終納品物一覧</div>
+            <div class="card-desc">納品されるファイル構成、ライセンス、および使用説明書。</div>
+            <div class="status-badge">
+                <span class="status-dot"></span> 完了
+            </div>
+        </a>
+
+        <a href="viewer.html?file=../05_Evaluation/05_Final_Evaluation.md" class="card">
+            <div class="card-tag">Milestone 05</div>
+            <div class="card-title">完了報告書・評価表</div>
+            <div class="card-desc">プロジェクトの総括、最終エビデンス、およびチームの自己評価。</div>
+            <div class="status-badge">
+                <span class="status-dot"></span> 完了
+            </div>
+        </a>
+    </main>
+
+    <!-- POST-DELIVERY UPDATES SECTION -->
+    <section style="width: 100%; max-width: 1000px; margin-top: 48px; animation: fadeInUp 1s ease-out 0.4s both;">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+            <div style="width: 4px; height: 28px; background: linear-gradient(180deg, #f067ff, #7367f0); border-radius: 2px;"></div>
+            <h2 style="font-size: 1.4rem; font-weight: 700; color: var(--text-main); margin: 0;">POST-DELIVERY UPDATES</h2>
+            <span style="font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; background: rgba(240, 103, 255, 0.1); color: #f067ff; border: 1px solid rgba(240, 103, 255, 0.3); font-weight: 600; letter-spacing: 1px;">CONTINUOUS</span>
+        </div>
+
+        <div class="card" style="border-color: rgba(240, 103, 255, 0.3); background: linear-gradient(135deg, rgba(240, 103, 255, 0.05) 0%, var(--card-bg) 100%);">
+            <div class="card-tag" style="color: #f067ff;">納品後改善履歴 (Incident Response)</div>
+            <div class="card-desc" style="margin-bottom: 16px;">ユーザーフィードバックに基づく継続的改善の全記録。各ISSUEにはRCA（根本原因分析）と再発防止策が含まれます。</div>
+
+            <div style="display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 20;">
+                <a href="viewer.html?file=../09_Incidents/ISSUE-023_Root_Structure_Cleanup.md" class="history-link active-link" style="border-left: 2px solid #f067ff; background: rgba(240, 103, 255, 0.1);">
+                    <span class="history-num">NEW</span> ルート構造の整理とREADME更新 (ISSUE-023)
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-022_Pause_Button_State_Sync.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">022.</span> PAUSEボタン初期状態の同期
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-021_Relocate_Clear_Memory.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">021.</span> CLEAR機能のUI移設
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-020_Clear_Memory_and_End_of_Life.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">020.</span> メモ全削除機能と上限年齢停止ロジック
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-019_Pause_UI_and_Rate_Limit.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">019.</span> PAUSE UI改修とAPIレートリミット対策
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-018_AI_Client_Silent_Failure_and_Import_Fix.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">018.</span> AIクライアントのサイレント実行不全
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-017_Autonomous_Topic_Generation.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">017.</span> 完全自律型トピック生成への移行
+                </a>
+                <a href="viewer.html?file=../07_Reports/2026-04-26_Narrative_Overhaul_Report.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">NEW</span> A-Eエレクトラ・ナラティブ刷新 完了報告書
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-016_Ghost_Narrative_Density_and_Logic_Overhaul.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">016.</span> 記録の密度不足および生成ロジックの刷新
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-015_Ghost_Refactoring_and_Stall.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">015.</span> タイマー再停止およびコード分割リファクタリング
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-014_Ghost_Responsive_and_Syntax_Failure.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">014.</span> ゴースト画面レスポンシブ不備および実行不全
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-013_Simulator_Timer_Freeze_RCA.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">013.</span> シミュレータータイマー凍結問題の根本解決
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-012_Ghost_Agent_Silent_Failure.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">012.</span> ゴーストエージェント実行不全のRCA
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-011_Ghost_Emotion_Engine.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">011.</span> A-Eエモーションエンジン導入
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-010_WhiteMode_Text_and_Portal_Updates.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">010.</span> ホワイトモード文字色 & ポータル更新セクション
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-009_Global_UI_Sync_and_Scroll.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">009.</span> グローバルUI同期 & スクロール修正
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-008_Simulator_UX_Improvements.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">008.</span> シミュレーターUX改善（スライダー・ログ）
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-007_Async_Race_Condition.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">007.</span> 非同期レースコンディション解消
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-006_SDK_and_Env_Adoption.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">006.</span> SDK移行 & .env環境変数管理
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-005_Ghost_Simulation_Expansion.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">005.</span> ゴーストシミュレーション拡張
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-004_Viewer_Rendering_Sync_Failure.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">004.</span> ビューア表示同期エラー
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-003_Nested_Link_Interaction_Failure.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">003.</span> ネストリンク操作不具合
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-002_Report_History_Accessibility.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">002.</span> 報告書履歴アクセシビリティ
+                </a>
+                <a href="viewer.html?file=../09_Incidents/ISSUE-001_Live_Demo_Integration.md" class="history-link" style="border-left: 2px solid #f067ff;">
+                    <span class="history-num">001.</span> Live Demo統合
+                </a>
+            </div>
+
+            <div class="status-badge">
+                <span class="status-dot" style="background: #f067ff; box-shadow: 0 0 10px #f067ff;"></span> 継続的改善中
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        POWERED BY TEAM AURORA | GOVERNANCE FIRST
+    </footer>
+
+    <!-- Global Sync Logic -->
+    <script>
+        const themeSlider = document.getElementById('theme-slider');
+        const themeDisplay = document.getElementById('theme-display');
+
+        function applyTheme(val) {
+            if (themeDisplay) themeDisplay.innerText = `Theme: ${val < 50 ? 'Light' : 'Dark'} (${val}%)`;
+            const lightness = 95 - (val * 0.9);
+            document.documentElement.style.setProperty('--bg-dark', `hsl(220, 40%, ${Math.max(5, lightness)}%)`);
+            document.documentElement.style.setProperty('--card-bg', val < 50 ? 'rgba(255, 255, 255, 0.95)' : 'rgba(30, 41, 59, 0.7)');
+            document.documentElement.style.setProperty('--text-main', val < 50 ? '#111' : '#f1f5f9');
+            document.documentElement.style.setProperty('--text-dim', val < 50 ? '#555' : '#94a3b8');
+            document.documentElement.style.setProperty('--glass-border', val < 50 ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.1)');
+            document.body.style.backgroundImage = val < 50 ? 'none' : 'radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.15) 0, transparent 50%), radial-gradient(at 100% 100%, rgba(115, 103, 240, 0.15) 0, transparent 50%)';
+            
+            if (themeSlider && themeSlider.value !== String(val)) themeSlider.value = val;
+        }
+
+        applyTheme(parseInt(localStorage.getItem('aurora_theme') || '100'));
+
+        if (themeSlider) {
+            themeSlider.addEventListener('input', (e) => {
+                const val = e.target.value;
+                localStorage.setItem('aurora_theme', val);
+                applyTheme(parseInt(val));
+            });
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'aurora_theme') applyTheme(parseInt(e.newValue));
+        });
+    </script>
+</body>
+</html>
