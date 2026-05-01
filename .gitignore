@@ -1,12 +1,17 @@
 *
 !.agent/
+!.agent/**
 !README.md
 !.gitignore
 !management/
 !management/**
 !product/
 !product/**
-product/.env
+
+# 安全対策: どの階層にある .env も絶対に除外する
+.env
+**/.env
+*.env
 product/tests/node_modules/
 product/tests/test-results/
 .genkit/

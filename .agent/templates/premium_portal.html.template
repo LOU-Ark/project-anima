@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - Project Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent-primary: #00f2fe;
+            --accent-secondary: #7367f0;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(115, 103, 240, 0.15) 0, transparent 50%);
+            color: var(--text-main);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+        }
+
+        .header { text-align: center; margin-bottom: 60px; }
+        .header h1 {
+            font-size: 3rem; font-weight: 700; margin: 0;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px; width: 100%; max-width: 1000px;
+        }
+
+        .card {
+            background: var(--card-bg); backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 32px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none; color: inherit; display: flex; flex-direction: column;
+            position: relative; overflow: hidden;
+        }
+
+        .card:hover { transform: translateY(-10px); border-color: var(--accent-primary); }
+
+        .demo-badge {
+            display: inline-block; width: 8px; height: 8px; background: #ff4b2b;
+            border-radius: 50%; box-shadow: 0 0 10px #ff4b2b;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 75, 43, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 75, 43, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 75, 43, 0); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>{{title}}</h1>
+        <p>Project Portal Hub</p>
+    </header>
+
+    <main class="grid">
+        <!-- LIVE DEMO CARD (Standardized) -->
+        <a href="../../product/index.html" target="_blank" class="card" style="grid-column: 1 / -1; border-color: var(--accent-primary); background: linear-gradient(135deg, rgba(0, 242, 254, 0.1) 0%, rgba(30, 41, 59, 0.7) 100%);">
+            <div style="font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: var(--accent-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                <span class="demo-badge"></span> LIVE DEMO
+            </div>
+            <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 8px;">プロダクトを試す</div>
+            <div style="font-size: 0.95rem; color: var(--text-dim); line-height: 1.6;">最新の実装状態を直接操作して確認できます。</div>
+        </a>
+
+        <!-- Milestone Cards (Supports multiple links for history tracking) -->
+        {{milestone_cards}}
+    </main>
+</body>
+</html>
